@@ -31,9 +31,9 @@ Browser tests use Chromium at `/usr/bin/chromium`. Set `CHROMIUM_PATH` to your C
 - See `docs/content-review.md` for remaining migration work. Draft policies, private pages, author metadata, plugin settings, and customer data are not imported into the application.
 - To repeat catalogue extraction: `python scripts/import-wordpress.py /path/to/export.xml`. The original XML is kept outside the repository.
 - The preview deliberately contains a `noindex, nofollow` robots directive. Remove it when approved for public launch.
-- Typography uses system fonts. The main pages use local SVG illustrations and text brand names; they do not require WordPress images or Google Fonts.
+- Typography uses system fonts. Illustrations use local SVGs and typography uses system fonts. Brand logos reference their original WordPress image URLs, with text fallbacks if unavailable.
 - `npm run build` outputs a static site in `dist/`. It has not been deployed. The current WordPress website and domain are unchanged.
 
 Use the existing checkout for future tasks; cloud tasks are already isolated and do not need a separate Git worktree unless requested.
 
-The original Home, Products, Contact, Blog, Careers and published article paths are available. `public/_redirects` enables Netlify to serve these routes on direct navigation. Original media references are retained in the import files for future use, but the main-page design does not depend on those files.
+The original Home, Products, Contact, Blog, Careers and published article paths are available. `public/_redirects` enables Netlify to serve these routes on direct navigation. Original media references are retained in the import files. The homepage brand logos currently depend on the original WordPress host; provide image files to bundle them locally.

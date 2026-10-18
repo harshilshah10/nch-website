@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 test('imported catalogue supports categories, search, paging, and empty results',async({page})=>{
  await page.goto('/products/');
- await expect(page.locator('#result-count')).toContainText('478 catalogue entries');
+ await expect(page.locator('#result-count')).toContainText('478 products');
  await expect(page.locator('.product')).toHaveCount(24);
  await page.getByRole('button',{name:'Show more products'}).click();
  await expect(page.locator('.product')).toHaveCount(48);
@@ -50,7 +50,8 @@ test('published business details and responsive layout',async({page},info)=>{
  await expect(page.locator('address')).toContainText('Baba Dogo Rd');
  await expect(page.getByRole('link',{name:'+254 704 656 651',exact:true})).toHaveAttribute('href','tel:+254704656651');
  await page.goto('/products/');
- await expect(page.locator('#catalogue-content .brands-original').getByText('FORTUNE',{exact:false})).toBeVisible();
+ await expect(page.locator('#home-content .brand-logo img').first()).toHaveAttribute('alt','Fortune');
+ await expect(page.locator('#home-content .brand-logo img')).toHaveCount(3);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  expect(errors).toEqual([]);
  await page.screenshot({path:`test-results/${info.project.name}.png`,fullPage:true});
@@ -83,7 +84,7 @@ test('direct selection explains the next step and category links survive reload'
  await page.getByRole('button',{name:'Add Basin Mixers to enquiry',exact:true}).click();
  await expect(page.locator('.enquiry-tray')).toBeVisible();
  await expect(page.locator('#tray-count')).toHaveText('1 product type in your enquiry');
- await expect(page.getByRole('button',{name:'Remove Basin Mixers from enquiry'})).toHaveText('✓ Added · remove');
+ await expect(page.getByRole('button',{name:'Remove Basin Mixers from enquiry'})).toHaveText('✓ Selected');
  await expect(page.locator('#toast')).toContainText('Nothing has been sent');
  await page.reload();
  await expect(page.getByRole('searchbox')).toHaveValue('basin mixers');
@@ -94,4 +95,23 @@ test('direct selection explains the next step and category links survive reload'
  await page.getByRole('button',{name:'Remove Basin Mixers',exact:true}).click();
  await page.getByRole('button',{name:'Close enquiry'}).click();
  await expect(page.locator('.enquiry-tray')).toBeHidden();
+});
+
+test('consistent icons, readable selection and reduced motion',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.goto('/');
+ const colors=await page.locator('.category-icon').evaluateAll(icons=>icons.map(el=>getComputedStyle(el).color));
+ expect(new Set(colors).size).toBe(1);
+ expect(await page.locator('.hardware-scene').evaluate(el=>getComputedStyle(el).animationName)).toBe('none');
+ await expect(page.locator('#home-content .brand-logo img').nth(1)).toHaveAttribute('src',/Titan-Logo.png$/);
+ await expect(page.locator('#home-content .brand-logo img').nth(2)).toHaveAttribute('src',/cobraaa.jpg$/);
+ await page.goto('/products/?category=Plumbing&q=Basin+Mixers');
+ const add=page.getByRole('button',{name:'Add Basin Mixers to enquiry',exact:true});
+ expect(await add.evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(14);
+ await add.click();
+ await expect(page.getByRole('button',{name:'Remove Basin Mixers from enquiry',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('.product')).toHaveClass(/is-selected/);
+ await expect(page.locator('[data-category="Plumbing"]')).toHaveAttribute('aria-pressed','true');
+ await page.setViewportSize({width:320,height:740});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
 });

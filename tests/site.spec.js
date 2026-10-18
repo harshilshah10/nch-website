@@ -65,7 +65,8 @@ test('restored home, blog and careers pages preserve published content',async({p
  await expect(page.locator('cite').filter({hasText:'Mwangi Kamau'})).toBeVisible();
  await page.getByText('How do I get a price?',{exact:false}).click();
  await expect(page.locator('.faq details').first()).toHaveAttribute('open','');
- await expect(page.locator('.hardware-scene')).toBeVisible();
+ await expect(page.locator('.hero-photo')).toBeVisible();
+ expect(await page.locator('.hero-photo').evaluate(img=>img.complete && img.naturalWidth>1000)).toBeTruthy();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  await page.screenshot({path:`test-results/modern-home-${info.project.name}.png`,fullPage:true});
  await page.getByRole('link',{name:'Blog',exact:true}).click();
@@ -102,7 +103,7 @@ test('consistent icons, readable selection and reduced motion',async({page})=>{
  await page.goto('/');
  const colors=await page.locator('.category-icon').evaluateAll(icons=>icons.map(el=>getComputedStyle(el).color));
  expect(new Set(colors).size).toBe(1);
- expect(await page.locator('.hardware-scene').evaluate(el=>getComputedStyle(el).animationName)).toBe('none');
+ expect(await page.locator('.hero-photo').evaluate(el=>getComputedStyle(el).animationName)).toBe('none');
  await expect(page.locator('#home-content .brand-logo img').nth(1)).toHaveAttribute('src',/Titan-Logo.png$/);
  await expect(page.locator('#home-content .brand-logo img').nth(2)).toHaveAttribute('src',/cobraaa.jpg$/);
  await page.goto('/products/?category=Plumbing&q=Basin+Mixers');

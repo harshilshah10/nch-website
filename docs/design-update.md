@@ -15,3 +15,7 @@ Removed the top promotional bar, repeated eyebrow captions, category numbering, 
 Section entrances, the hardware illustration, dialog opening, enquiry tray, and button feedback use short, finite animations. Content remains visible without JavaScript animation, and prefers-reduced-motion disables both CSS and observer-driven animations.
 
 Fortune, Titan and Cobra image URLs from the original WordPress export replace text-only logos on the homepage. They correspond to the user's supplied reference. The source host denies downloads from this cloud environment, so the logos are externally hosted, with plain brand-name fallbacks on load failure. Their appearance on the deployed site has not been verified; local copies are still needed for independent hosting.
+
+## Homepage image replacement
+
+Replaced the abstract bolt SVG with an original AI-generated photographic-style hardware still life, showing hand tools, fittings and work gloves. It is illustrative brand artwork, not a photograph of actual store inventory. The original generated PNG is retained outside the repository; the optimized WebP at `public/images/hardware-hero.webp` ships with the site and requires no external image service. The image has explicit dimensions, descriptive alternative text, eager high-priority loading, and reduced-motion support.

@@ -42,26 +42,30 @@ test('published business details and responsive layout',async({page},info)=>{
  await expect(page.getByRole('heading',{level:1})).toBeVisible();
  await page.goto('/contact/');
  await expect(page.locator('address')).toContainText('Baba Dogo Rd');
- await expect(page.getByRole('link',{name:'+254 704 656 651'})).toHaveAttribute('href','tel:+254704656651');
+ await expect(page.getByRole('link',{name:'+254 704 656 651',exact:true})).toHaveAttribute('href','tel:+254704656651');
  await page.goto('/products/');
- await expect(page.getByText('Fortune',{exact:true})).toBeVisible();
+ await expect(page.locator('#catalogue-content .brands-original').getByText('FORTUNE',{exact:false})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  expect(errors).toEqual([]);
  await page.screenshot({path:`test-results/${info.project.name}.png`,fullPage:true});
 });
 
-test('restored home, blog and careers pages preserve published content',async({page})=>{
+test('restored home, blog and careers pages preserve published content',async({page},info)=>{
  await page.goto('/');
- await expect(page.getByRole('heading',{name:'NAIROBI CENTRAL HARDWARE',level:1})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Big ideas. Built here.',level:1})).toBeVisible();
  await expect(page.getByRole('heading',{name:'Meet our Founder'})).toBeVisible();
  await expect(page.getByRole('heading',{name:'Adarsh Gudka'})).toBeVisible();
- await expect(page.getByText('Mwangi Kamau',{exact:true})).toBeVisible();
- expect(await page.locator('.original-hero').evaluate(e=>getComputedStyle(e).backgroundColor)).toBe('rgb(73, 0, 0)');
+ await expect(page.locator('cite').filter({hasText:'Mwangi Kamau'})).toBeVisible();
+ await page.getByText('How do I get a price?',{exact:false}).click();
+ await expect(page.locator('.faq details').first()).toHaveAttribute('open','');
+ await expect(page.locator('.hardware-scene')).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+ await page.screenshot({path:`test-results/modern-home-${info.project.name}.png`,fullPage:true});
  await page.getByRole('link',{name:'Blog',exact:true}).click();
  await expect(page.locator('.blog-list article')).toHaveCount(2);
  await page.locator('.blog-list article').first().getByRole('link',{name:'Read article'}).click();
  await expect(page.locator('.legacy-page')).toContainText('plumbing contractor');
- await page.getByRole('link',{name:'Careers',exact:true}).click();
+ await page.getByRole('navigation').getByRole('link',{name:'Careers',exact:true}).click();
  await expect(page.getByRole('heading',{name:'We are hiring!'})).toBeVisible();
  await expect(page.getByText('Listings from the existing website.',{exact:false})).toBeVisible();
 });

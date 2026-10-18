@@ -1,6 +1,6 @@
 # Nairobi Central Hardware — concept website
 
-A responsive catalogue and email-enquiry prototype built with Vite and vanilla JavaScript. The uploaded WordPress export has been reviewed and its published catalogue imported: 478 category/product entries across 19 categories. The live website and media downloads remain inaccessible from this environment. The visual design now follows the published Elementor palette, typography and homepage structure. Screenshots and original media are still needed to verify the exact appearance. See `docs/theme-restoration.md`.
+A responsive catalogue and email-enquiry prototype built with Vite and vanilla JavaScript. The uploaded WordPress export has been reviewed and its published catalogue imported: 478 category/product entries across 19 categories. The live website and media downloads remain inaccessible from this environment. The current design is a modern reinterpretation requested after the original-theme reconstruction: vermilion accents, warm neutral surfaces, bold typography, and locally rendered SVG hardware illustrations. Published business content and catalogue data remain intact. See `docs/design-update.md`.
 
 ## Develop
 
@@ -31,9 +31,9 @@ Browser tests use Chromium at `/usr/bin/chromium`. Set `CHROMIUM_PATH` to your C
 - See `docs/content-review.md` for remaining migration work. Draft policies, private pages, author metadata, plugin settings, and customer data are not imported into the application.
 - To repeat catalogue extraction: `python scripts/import-wordpress.py /path/to/export.xml`. The original XML is kept outside the repository.
 - The preview deliberately contains a `noindex, nofollow` robots directive. Remove it when approved for public launch.
-- Typography requests the original Open Sans, Poppins and Raleway families through Google Fonts and falls back to system fonts when unavailable.
+- Typography uses system fonts. The main pages use local SVG illustrations and text brand names; they do not require WordPress images or Google Fonts.
 - `npm run build` outputs a static site in `dist/`. It has not been deployed. The current WordPress website and domain are unchanged.
 
 Use the existing checkout for future tasks; cloud tasks are already isolated and do not need a separate Git worktree unless requested.
 
-The original Home, Products, Contact, Blog, Careers and published article paths are available. `public/_redirects` enables Netlify to serve these routes on direct navigation. Original media remains hosted on the WordPress domain until local copies are supplied.
+The original Home, Products, Contact, Blog, Careers and published article paths are available. `public/_redirects` enables Netlify to serve these routes on direct navigation. Original media references are retained in the import files for future use, but the main-page design does not depend on those files.

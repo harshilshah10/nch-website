@@ -13,7 +13,7 @@ try {const stored=JSON.parse(localStorage.getItem('nch-requirements')||'{}');if(
 try {selected=JSON.parse(localStorage.getItem('nch-enquiry')||'[]').filter(id=>products.some(p=>p.id===id));} catch {}
 const app=document.querySelector('#app');
 app.innerHTML=`
-<header><a class="brand original-brand" href="/" aria-label="Nairobi Central Hardware home"><span class="brand-symbol">nch<span>.</span></span><span>NAIROBI CENTRAL<br>HARDWARE LIMITED</span></a><nav aria-label="Main navigation"><a href="/">Home</a><a href="/products/">Products</a><a href="/contact/">Contact</a><a href="/blog/">Blog</a><a href="/careers/">Careers</a></nav><button class="enquiry outline">Your enquiry <span class="count">0</span> ${arrow}</button></header>
+<header><a class="brand original-brand" href="/" aria-label="Nairobi Central Hardware home"><span class="brand-symbol">nch<span>.</span></span><span>NAIROBI CENTRAL<br>HARDWARE LIMITED</span></a><button class="enquiry outline">Your enquiry <span class="count">0</span> ${arrow}</button><button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-navigation"><span></span><span></span></button><nav id="main-navigation" aria-label="Main navigation"><a href="/">Home</a><a href="/products/">Products</a><a href="/contact/">Contact</a><a href="/blog/">Blog</a><a href="/careers/">Careers</a></nav></header>
 <main id="home"><div id="home-content">${homeContent()}</div><div id="page-content"></div><div id="catalogue-content"><section class="products-banner"><h1>Products</h1><p>Find what you need and add it to an enquiry. We’ll confirm prices and availability.</p></section>
 <section id="products" class="catalogue section"><div class="catalogue-layout"><aside class="category-sidebar"><details id="category-picker" open><summary>Browse categories <span id="active-category">All products</span></summary><div class="category-options" role="group" aria-label="Product categories">${categories.map(c=>`<button data-category="${escapeHtml(c)}" aria-pressed="${c===category}"><span>${escapeHtml(c)}</span><small>${c==='All products'?products.length:products.filter(p=>p.category===c).length}</small></button>`).join('')}</div></details></aside><div class="catalogue-results"><div class="catalogue-toolbar"><label class="search"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search products, e.g. taps, gloves, screws…" aria-label="Search products"/></label><button id="clear-filters" class="quiet-link">Clear filters</button></div><div class="results-note"><span id="result-count" aria-live="polite"></span><span id="filter-summary"></span></div><div class="product-grid" id="product-grid"></div><button class="button outline load-more" id="load-more">Show more products</button></div></div></section>
 <div class="enquiry-tray" hidden><div><strong id="tray-count"></strong></div><button class="button primary enquiry">Review enquiry ${arrow}</button></div>
@@ -82,3 +82,24 @@ if(!reducedMotion.matches && 'IntersectionObserver' in window){
  const observer=new IntersectionObserver(entries=>{for(const entry of entries){if(entry.isIntersecting){entry.target.animate([{opacity:.65,transform:'translateY(12px)'},{opacity:1,transform:'translateY(0)'}],{duration:400,easing:'cubic-bezier(.2,.7,.3,1)'});observer.unobserve(entry.target);}}},{threshold:.12});
  document.querySelectorAll('.category-section,.about-modern,.founder-section,.testimonials,.faq,.brands-original,.project-cta').forEach(el=>observer.observe(el));
 }
+
+// Compact disclosure navigation; native dialogs remain above the sticky header.
+const siteHeader=document.querySelector('header');
+const menuToggle=document.querySelector('.menu-toggle');
+const mainNavigation=document.querySelector('#main-navigation');
+const compactHeader=matchMedia('(max-width: 900px)');
+function setMenu(open,restoreFocus=false){
+ siteHeader.classList.toggle('menu-open',open);
+ menuToggle.setAttribute('aria-expanded',String(open));
+ menuToggle.setAttribute('aria-label',open?'Close menu':'Open menu');
+ mainNavigation.hidden=compactHeader.matches&&!open;
+ if(restoreFocus)menuToggle.focus();
+}
+menuToggle.addEventListener('click',()=>setMenu(menuToggle.getAttribute('aria-expanded')!=='true'));
+compactHeader.addEventListener('change',()=>setMenu(false));
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&siteHeader.classList.contains('menu-open'))setMenu(false,true);});
+document.addEventListener('click',event=>{if(!siteHeader.contains(event.target)||event.target.closest('nav a, .enquiry'))setMenu(false);});
+siteHeader.addEventListener('focusout',event=>{if(event.relatedTarget&&!siteHeader.contains(event.relatedTarget))setMenu(false);});
+function updateHeader(){siteHeader.classList.toggle('is-scrolled',scrollY>12);}
+addEventListener('scroll',updateHeader,{passive:true});
+setMenu(false);updateHeader();

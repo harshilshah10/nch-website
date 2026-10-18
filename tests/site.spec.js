@@ -69,10 +69,12 @@ test('restored home, blog and careers pages preserve published content',async({p
  expect(await page.locator('.hero-photo').evaluate(img=>img.complete && img.naturalWidth>1000)).toBeTruthy();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  await page.screenshot({path:`test-results/modern-home-${info.project.name}.png`,fullPage:true});
- await page.getByRole('link',{name:'Blog',exact:true}).click();
+ if(await page.getByRole('button',{name:'Open menu',exact:true}).isVisible()) await page.getByRole('button',{name:'Open menu',exact:true}).click();
+ await page.getByRole('navigation').getByRole('link',{name:'Blog',exact:true}).click();
  await expect(page.locator('.blog-list article')).toHaveCount(2);
  await page.locator('.blog-list article').first().getByRole('link',{name:'Read article'}).click();
  await expect(page.locator('.legacy-page')).toContainText('plumbing contractor');
+ if(await page.getByRole('button',{name:'Open menu',exact:true}).isVisible()) await page.getByRole('button',{name:'Open menu',exact:true}).click();
  await page.getByRole('navigation').getByRole('link',{name:'Careers',exact:true}).click();
  await expect(page.getByRole('heading',{name:'We are hiring!'})).toBeVisible();
  await expect(page.getByText('Listings from the existing website.',{exact:false})).toBeVisible();
@@ -115,4 +117,27 @@ test('consistent icons, readable selection and reduced motion',async({page})=>{
  await expect(page.locator('[data-category="Plumbing"]')).toHaveAttribute('aria-pressed','true');
  await page.setViewportSize({width:320,height:740});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});
+
+test('compact sticky header and accessible mobile menu',async({page},info)=>{
+ await page.goto('/');
+ const header=page.locator('header');
+ expect((await header.boundingBox()).height).toBeLessThanOrEqual(80);
+ await page.evaluate(()=>{document.documentElement.style.scrollBehavior='auto';window.scrollTo(0,700);});
+ await expect(header).toHaveClass(/is-scrolled/);
+ expect(Math.round((await header.boundingBox()).y)).toBe(0);
+ const toggle=page.getByRole('button',{name:'Open menu',exact:true});
+ if(info.project.name==='mobile'){
+  await expect(page.getByRole('navigation')).toBeHidden();
+  await toggle.click();
+  await expect(page.getByRole('navigation')).toBeVisible();
+  await expect(page.getByRole('button',{name:'Close menu',exact:true})).toHaveAttribute('aria-expanded','true');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('navigation')).toBeHidden();
+  await expect(toggle).toBeFocused();
+  await toggle.click();
+  await page.getByRole('navigation').getByRole('link',{name:'Products',exact:true}).click();
+  await expect(page).toHaveURL(/\/products\//);
+  await expect(page.getByRole('navigation')).toBeHidden();
+ }else await expect(page.getByRole('navigation')).toBeVisible();
 });

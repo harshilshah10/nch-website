@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('imported catalogue supports categories, search, paging, and empty results',async({page})=>{
- await page.goto('/');
+ await page.goto('/products/');
  await expect(page.locator('#result-count')).toContainText('478 catalogue entries');
  await expect(page.locator('.product')).toHaveCount(24);
  await page.getByRole('button',{name:'Show more products'}).click();
@@ -16,7 +16,7 @@ test('imported catalogue supports categories, search, paging, and empty results'
  await expect(page.locator('.product-category')).toHaveText('Plumbing');
 });
 test('real product enquiry preserves selection and prepares an email',async({page})=>{
- await page.goto('/');
+ await page.goto('/products/');
  await page.getByRole('searchbox').fill('Basin Mixers');
  await page.getByRole('button',{name:'Basin Mixers',exact:true}).click();
  await expect(page.getByRole('dialog')).toBeVisible();
@@ -38,12 +38,30 @@ test('real product enquiry preserves selection and prepares an email',async({pag
  await expect(page.locator('.count')).toHaveText('0');
 });
 test('published business details and responsive layout',async({page},info)=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/products/');
  await expect(page.getByRole('heading',{level:1})).toBeVisible();
+ await page.goto('/contact/');
  await expect(page.locator('address')).toContainText('Baba Dogo Rd');
  await expect(page.getByRole('link',{name:'+254 704 656 651'})).toHaveAttribute('href','tel:+254704656651');
- await expect(page.getByText('Fortune · Titan · Cobra')).toBeVisible();
+ await page.goto('/products/');
+ await expect(page.getByText('Fortune',{exact:true})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  expect(errors).toEqual([]);
  await page.screenshot({path:`test-results/${info.project.name}.png`,fullPage:true});
+});
+
+test('restored home, blog and careers pages preserve published content',async({page})=>{
+ await page.goto('/');
+ await expect(page.getByRole('heading',{name:'NAIROBI CENTRAL HARDWARE',level:1})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Meet our Founder'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Adarsh Gudka'})).toBeVisible();
+ await expect(page.getByText('Mwangi Kamau',{exact:true})).toBeVisible();
+ expect(await page.locator('.original-hero').evaluate(e=>getComputedStyle(e).backgroundColor)).toBe('rgb(73, 0, 0)');
+ await page.getByRole('link',{name:'Blog',exact:true}).click();
+ await expect(page.locator('.blog-list article')).toHaveCount(2);
+ await page.locator('.blog-list article').first().getByRole('link',{name:'Read article'}).click();
+ await expect(page.locator('.legacy-page')).toContainText('plumbing contractor');
+ await page.getByRole('link',{name:'Careers',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'We are hiring!'})).toBeVisible();
+ await expect(page.getByText('Listings from the existing website.',{exact:false})).toBeVisible();
 });

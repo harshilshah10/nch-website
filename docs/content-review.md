@@ -18,8 +18,8 @@ All 19 catalogue categories, company purpose, founder Adarsh Gudka, founding yea
 
 - Obtain `wp-content/uploads` and screenshots to select the actual logo and relevant photographs.
 - Confirm current contact details, product spellings, ranges, and brands with the business. Confirm whether WhatsApp is supported.
-- Plan preservation or redirects for `/products/`, `/contact/`, `/blog/`, `/careers/`, and the two `/business/` post URLs. The prototype currently uses homepage sections, not dedicated migrated routes.
-- Blog posts and careers listings have been reviewed but are not yet rendered. Confirm vacancies are current before presenting them as open positions.
+- The `/products/`, `/contact/`, `/blog/`, `/careers/`, and two `/business/` post URLs now render their respective pages through a Netlify SPA fallback.
+- Blog posts and careers listings now render at their original paths. Careers includes a notice to confirm current openings.
 - Review actual policies separately; the export's draft refund policy is generic placeholder text and was not published in the new site.
-- Original testimonials have not been republished in this concept.
+- Both original testimonials are now included on the homepage.
 - The live site was not rendered or visually inspected. No deployment or domain changes have occurred.

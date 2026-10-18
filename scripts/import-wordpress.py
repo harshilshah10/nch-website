@@ -23,7 +23,7 @@ class CatalogueParser(HTMLParser):
    self.capture=None
 parser=CatalogueParser();parser.feed(page.findtext('content:encoded',namespaces=ns))
 rows=list(dict.fromkeys(parser.rows))
-products=[{'id':hashlib.sha256((cat+'|'+name).encode()).hexdigest()[:12], 'name':name,'category':cat,'note':'Contact us for sizes, options and availability.'} for cat,name in rows]
+products=[{'id':hashlib.sha256((cat+'|'+name).encode()).hexdigest()[:12], 'name':name,'category':cat,'note':'Contact us for sizes, options, and availability.'} for cat,name in rows]
 base=Path(__file__).resolve().parents[1]
 (base/'src/products.json').write_text(json.dumps(products,indent=2,ensure_ascii=False)+'\n')
 media=[{'title':i.findtext('title') or '', 'url':i.findtext('wp:attachment_url',namespaces=ns)} for i in items if i.findtext('wp:post_type',namespaces=ns)=='attachment']
